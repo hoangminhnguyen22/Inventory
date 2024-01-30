@@ -28,7 +28,7 @@
             <div class="nav-search" id="nav-search">
                 <form class="form-search">
                     <span class="input-icon">
-                        <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                        <input type="text" name="key" placeholder="Search ..." class="nav-search-input" name="search" autocomplete="off" />
                         <i class="ace-icon fa fa-search nav-search-icon"></i>
                     </span>
                 </form>
@@ -51,7 +51,7 @@
                         <i class="ace-icon fa fa-check bigger-110"></i>
                         Create
                     </a>
-                    <a class="btn btn-info" type="button" href="{{route('asset.create')}}">
+                    <a class="btn btn-info" type="button" href="{{route('asset.import')}}">
                         <i class="ace-icon fa fa-check bigger-110"></i>
                         Import
                     </a>
@@ -136,12 +136,12 @@
                         @endswitch
                     </td>                    
                     <td>
-                        <div>Date: {{$asset->purchase->date}}</div>
-                        <div>Serial: {{$asset->purchase->serial}}</div>
-                        <div>Warranty: {{$asset->purchase->warranty}}</div>
-                        <div>Supplier: {{$asset->purchase->supplier->name}}</div>
-                        <div>Model: {{$asset->purchase->modelAsset->name}}</div>
-                        <div>Manuactorer: {{$asset->purchase->manufactorer->name}}</div>
+                        <div>Date: {{$asset->purchase->date ?? 'none'}}</div>
+                        <div>Serial: {{$asset->purchase->serial ?? 'none'}}</div>
+                        <div>Warranty: {{$asset->purchase->warranty ?? 'none'}}</div>
+                        <div>Supplier: {{$asset->purchase->supplier->name ?? 'none'}}</div>
+                        <div>Model: {{$asset->purchase->modelAsset->name ?? 'none'}}</div>
+                        <div>Manuactorer: {{$asset->purchase->manufactorer->name ?? 'none'}}</div>
                     </td>
                     <td>{{$asset->price}}.000VND</td>
                     <td>{{$asset->note}}</td>
@@ -164,8 +164,7 @@
                             </a>
                                 
                             <a href="{{ route('asset.destroy', $asset->id)}}" 
-                                class="btn btn-danger btn-sm rounded-0 text-white" type="button"
-                                data-toggle="tooltip" data-placement="top" title="delete">
+                                class="btn btn-danger btn-sm rounded-0 text-white btndelete" type="button">
                                 <i class="fa fa-trash">
                                 </i>
                             </a>                        

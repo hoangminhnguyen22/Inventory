@@ -1,0 +1,1258 @@
+openapi: 3.0.3
+info:
+  title: Swagger Inventory - OpenAPI 3.0
+  description: |-
+    This is a sample Inventory Server based on the OpenAPI 3.0 specification.
+  contact:
+    email: hoangvn1212@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://minh-hoang-intern.loc/api
+tags:
+  - name: auth
+    description: verification user
+  - name: location
+    description: Everything about location
+  - name: dashboard
+    description: Everything about asset
+  - name: metadata
+    description: get list department, category, manufactorer, model, supplier
+  - name: asset
+    description: Everything about Asset
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      summary: login
+      description: login
+      operationId: login
+      requestBody:
+        description: information login
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+        required: true
+      responses:
+        "200":
+          description: login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginSuccess"
+        "401":
+          description: login fail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginFail"
+  /register:
+    post:
+      tags:
+        - auth
+      summary: register
+      operationId: register
+      requestBody:
+        description: information login
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BodyRegister"
+        required: true
+      responses:
+        "200":
+          description: register successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseRegister"
+  /register/verify/{code}:
+    get:
+      tags:
+        - auth
+      summary: verify account
+      operationId: verify
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: fromyourmail
+      responses:
+        "200":
+          description: successful verify
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bạn đã xác nhận thành công, mời đăng nhập
+  /forgot/store:
+    post:
+      tags:
+        - auth
+      summary: forgot password
+      operationId: forgot
+      requestBody:
+        description: create new location
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: hoangvn1212@gmail.com
+      responses:
+        "200":
+          description: send mail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Mời bạn vào mail để đổi lại mật khẩu
+  /reset-password/{token}:
+    get:
+      tags:
+        - auth
+      summary: enter token in mail to reset password
+      operationId: checkreset
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            example: fromyourmail
+      responses:
+        "200":
+          description: successful verify
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Xác nhận thành công, mời bạn thay đổi mật khẩu
+  /reset-password:
+    put:
+      tags:
+        - auth
+      summary: enter new password
+      operationId: newpassword
+      requestBody:
+        description: create new location
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: hoangvn1212@gmail.com
+                password:
+                  type: string
+                  example: 123456
+      responses:
+        "200":
+          description: successful verify
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Xác nhận thành công, mời bạn thay đổi mật khẩu
+  /logout:
+    get:
+      tags:
+        - auth
+      summary: logout
+      operationId: logout
+      responses:
+        "200":
+          description: successful logout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Logout"
+  /dashboard:
+    get:
+      tags:
+        - dashboard
+      summary: data statistics
+      operationId: dashboard
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: data statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+  /location:
+    get:
+      tags:
+        - location
+      summary: Returns location list
+      operationId: getLocation
+      parameters:
+        - name: name
+          in: query
+          description: search location by name
+          schema:
+            type: string
+            example: quan
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful show list location
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListLocation"
+    post:
+      tags:
+        - location
+      summary: add new record location
+      operationId: postLocation
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: create new location
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BodyCreateLocation"
+        required: true
+      responses:
+        "200":
+          description: create successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseCreateLocation"
+  /location/{id}:
+    put:
+      tags:
+        - location
+      summary: update a exist location
+      operationId: putLocation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 4
+      requestBody:
+        description: update location
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                department_id:
+                  type: integer
+                note:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: update successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  department_id:
+                    type: integer
+                  note:
+                    type: string
+    delete:
+      tags:
+        - location
+      summary: delete location
+      operationId: deleteLocation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 5
+      responses:
+        "200":
+          description: delete successful
+          content:
+            application/json:
+              schema:
+                type: integer
+  /department:
+    get:
+      tags:
+        - metadata
+      summary: Returns department list
+      operationId: getDepartment
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful show list department
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListDepartment"
+  /category:
+    get:
+      tags:
+        - metadata
+      summary: Returns category list
+      operationId: getCategory
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful show list category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListCategory"
+  /manufactorer:
+    get:
+      tags:
+        - metadata
+      summary: Returns manufactorer list
+      operationId: getManufactorer
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful show list manufactorer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListManufactorer"
+  /model-asset:
+    get:
+      tags:
+        - metadata
+      summary: Returns model list
+      operationId: getModel
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful show list model
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListModel"
+  /supplier:
+    get:
+      tags:
+        - metadata
+      summary: Returns supplier list
+      operationId: getSupplier
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful show list supplier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSupplier"
+  /asset:
+    get:
+      tags:
+        - asset
+      summary: Returns asset list
+      operationId: getAsset
+      parameters:
+        - name: name
+          in: query
+          description: search asset by name
+          schema:
+            type: string
+            example: inspiron
+        - name: code
+          in: query
+          description: search asset by name
+          schema:
+            type: string
+            example: S11
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: successful show list asset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListAsset"
+    post:
+      tags:
+        - asset
+      summary: add new record asset
+      operationId: postAsset
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: create new asset
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BodyCreateAsset"
+        required: true
+      responses:
+        "200":
+          description: create successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseCreateAsset"
+  /asset/{id}:
+    put:
+      tags:
+        - asset
+      summary: update a exist asset
+      operationId: putAsset
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 4
+      requestBody:
+        description: update asset
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BodyCreateAsset"
+        required: true
+      responses:
+        "200":
+          description: update successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseCreateAsset"
+    delete:
+      tags:
+        - asset
+      summary: delete asset
+      operationId: deleteAsset
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 5
+      responses:
+        "200":
+          description: delete successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: xóa thành công
+components:
+  schemas:
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: hoang
+        password:
+          type: string
+          example: 123456
+    LoginSuccess:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiNmNhMDI2NGYwMmQ5NjU1ZGUzMDczZTU4NGJiYzFjYWNjNjI1NmFjZDFiODhjN2ZlM2VlY2E2Mzc2NTZjY2IwMzYwMWVjZTI1N2IwZWM5MTgiLCJpYXQiOjE3MDY0MTY4MjguMzM4Mjg2LCJuYmYiOjE3MDY0MTY4MjguMzM4Mjg5LCJleHAiOjE3MzgwMzkyMjguMzA3OTk3LCJzdWIiOiIzNCIsInNjb3BlcyI6W119.EFPAIgtPVKnVWAYWfi2P-hgyigRg08TPgw-QVR-SlYGDcrG5xNaiu-0kXHchiVPc0Rf1ut1AzYPf3_hy7BzkGLjFf-Ay9aeyEuiYSZXd59WX9KJaPFGnfleCkD-KpTogJdSs_nIsioGqLFdc8cwZID3DVs8RuWd1M8_DUw9NiOcXhME3R7yNrziZlDvmvTqZgGhTb8O8ZejE-5owPbcUkl6Zi-J5f0ZMYNKXEslRljMVp58HRx6T_FShsVqM8wXDCwdQmCzm1ez_YnW-8aNc5KIVDYbZO1lUevSwiymkW4HvVYRofhTt3192ubRcnu-2ADBzRbVc57fbvXo7-DHbySveam5blyMP82W7PWqqSBbTsNeO31ltRyVY42UgIHmi1hjt4Dka_Zqxom-Xv6DJ8zKBwU5zV-6dlRA89P_uK_SFN5EZmzeV_kALT7E610kHreDxxUII4ifGaDYmIphjtdv4c5s2vtPGSFBQHA7RUjZOhfNWyjh9h1JIER7lRHgnEPxGEzNmxJzYYjmBv-Jc5cB9Jh89NQzTEByPUgZiM3ft424bG8DD_qclhuyVjgge1cmsSpVyAasHHptj3nRXzLGG7607PJcRBkK9W6wk3_o2_UhHL9rVNFX4amY7oTAvKPHH_u8jmuQ1rb9jqAmboCBTIk8m-wzPhJwBpnp52vk
+        token_type:
+          type: string
+          example: bearer
+    LoginFail:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Invalid login details
+    ListLocation:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 11
+              name:
+                type: string
+                example: thái bình
+              department_id:
+                type: integer
+                example: 1
+              note:
+                type: string
+                example: abc
+        first_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/location?page=1
+        from:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        last_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/location?page=1
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: http://minh-hoang-intern.loc/api/location?page=1
+              label:
+                type: string
+                example: &laquo; Previous
+              active:
+                type: boolean
+                example: false
+        next_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/location?page=2
+        path:
+          type: string
+          example: http://minh-hoang-intern.loc/api/location
+        per_page:
+          type: integer
+          example: 2
+        prev_page_url:
+          type: integer
+        to:
+          type: integer
+          example: 2
+        total:
+          type: integer
+          example: 9
+    BodyCreateLocation:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Bình Dương
+        department_id:
+          type: integer
+          example: 3
+        note:
+          type: string
+          example: abc
+    BodyCreateAsset:
+      type: object
+      properties:
+        date:
+          type: string
+          format: ISO8601
+          example: 2022/01/20
+        serial:
+          type: string
+          example: H-1173
+        warranty:
+          type: string
+          example: 24
+        supplier_id:
+          type: integer
+          example: 3
+        manufactorer_id:
+          type: integer
+          example: 2
+        model_id:
+          type: integer
+          example: 2
+        code:
+          type: string
+          example: HOANG-2204
+        name:
+          type: string
+          example: Predator
+        location_id:
+          type: integer
+          example: 25
+        category_id:
+          type: integer
+          example: 1
+        condition:
+          type: integer
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+        price:
+          type: string
+          example: 44000
+        note:
+          type: string
+          example: abc
+    ResponseCreateAsset:
+      type: object
+      properties:
+        code:
+          type: string
+          example: 13371
+        name:
+          type: string
+          example: logitech-1357
+        location:
+          type: string
+          example: distric1
+        category:
+          type: string
+          example: đồ công nghệ
+        condition:
+          type: integer
+          default: 1
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+        purchase:
+          type: object
+          properties:
+            date:
+              type: string
+              format: ISO8601
+              example: 2011-03-03
+            serial:
+              type: string
+              example: sku1137
+            warrranty:
+              type: string
+              example: 34
+            supplier:
+              type: string
+              example: GearVN
+            model:
+              type: string
+              example: G3176
+            manufactorer:
+              type: string
+              example: logitech
+        price:
+          type: string
+          example: 3000
+        note:
+          type: string
+          example: abc
+    ResponseCreateLocation:
+      type: object
+      properties:
+        id:
+          type: integer
+        department_id:
+          type: integer
+        note:
+          type: string
+    BodyRegister:
+      type: object
+      properties:
+        email:
+          type: string
+          example: hoang
+        name:
+          type: string
+          example: nguyen minh hoang
+        phone:
+          type: string
+          example: 0586444225
+        password:
+          type: string
+          example: 123456
+        re-password:
+          type: string
+          example: 123456
+    ResponseRegister:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đăng ký thành công, vào mail để kích hoạt tài khoản
+    Logout:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đăng xuất thành công
+    Dashboard:
+      type: object
+      properties:
+        total_user:
+          type: integer
+          example: 10
+        total_asset:
+          type: integer
+          example: 10
+        recent_users:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 11
+              name:
+                type: string
+                example: hoang
+              email:
+                type: string
+                example: hoangvn1212@gmail.com
+              status:
+                type: integer
+                example: 1
+              token:
+                type: string
+                example: abcadsbshssssssss
+              email_verified_at:
+                type: string
+                format: ISO8601
+                example: 2024-01-24T03:31:56.000000Z
+              phone:
+                type: string
+                example: 0586444225
+              location_id:
+                type: integer
+                example: 1
+        recent_asset:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: 13371
+              name:
+                type: string
+                example: logitech-1357
+              location:
+                type: string
+                example: distric1
+              category:
+                type: string
+                example: đồ công nghệ
+              condition:
+                type: integer
+                default: 1
+                enum:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+              purchase:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: ISO8601
+                    example: 2011-03-03
+                  serial:
+                    type: string
+                    example: sku1137
+                  warrranty:
+                    type: string
+                    example: 34
+                  supplier:
+                    type: string
+                    example: GearVN
+                  model:
+                    type: string
+                    example: G3176
+                  manufactorer:
+                    type: string
+                    example: logitech
+              price:
+                type: string
+                example: 3000
+              note:
+                type: string
+                example: abc
+    ListDepartment:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 11
+              name:
+                type: string
+                example: HR Department
+              floor:
+                type: string
+                example: 8
+              unit:
+                type: string
+                example: 10
+              address:
+                type: string
+                example: 735 Krajcik Ferry\nLeslyton, AZ 74550
+              zipcode:
+                type: string
+                example: 1135
+        first_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/department?page=1
+        from:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        last_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/department?page=1
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: http://minh-hoang-intern.loc/api/department?page=1
+              label:
+                type: string
+                example: &laquo; Previous
+              active:
+                type: boolean
+                example: false
+        next_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/department?page=2
+        path:
+          type: string
+          example: http://minh-hoang-intern.loc/api/department
+        per_page:
+          type: integer
+          example: 2
+        prev_page_url:
+          type: integer
+        to:
+          type: integer
+          example: 2
+        total:
+          type: integer
+          example: 9
+    ListCategory:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 4
+              name:
+                type: string
+                example: case
+        first_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/category?page=1
+        from:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        last_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/category?page=1
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: http://minh-hoang-intern.loc/api/category?page=1
+              label:
+                type: string
+                example: &laquo; Previous
+              active:
+                type: boolean
+                example: false
+        next_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/category?page=2
+        path:
+          type: string
+          example: http://minh-hoang-intern.loc/api/category
+        per_page:
+          type: integer
+          example: 2
+        prev_page_url:
+          type: integer
+        to:
+          type: integer
+          example: 2
+        total:
+          type: integer
+          example: 9
+    ListManufactorer:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 4
+              name:
+                type: string
+                example: lenovo
+        first_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/manufactorer?page=1
+        from:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        last_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/manufactorer?page=1
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: http://minh-hoang-intern.loc/api/manufactorer?page=1
+              label:
+                type: string
+                example: &laquo; Previous
+              active:
+                type: boolean
+                example: false
+        next_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/manufactorer?page=2
+        path:
+          type: string
+          example: http://minh-hoang-intern.loc/api/manufactorer
+        per_page:
+          type: integer
+          example: 2
+        prev_page_url:
+          type: integer
+        to:
+          type: integer
+          example: 2
+        total:
+          type: integer
+          example: 9
+    ListModel:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 4
+              name:
+                type: string
+                example: intel
+        first_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/model-asset?page=1
+        from:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        last_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/model-asset?page=1
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: http://minh-hoang-intern.loc/api/model-asset?page=1
+              label:
+                type: string
+                example: &laquo; Previous
+              active:
+                type: boolean
+                example: false
+        next_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/model-asset?page=2
+        path:
+          type: string
+          example: http://minh-hoang-intern.loc/api/model-asset
+        per_page:
+          type: integer
+          example: 2
+        prev_page_url:
+          type: integer
+        to:
+          type: integer
+          example: 2
+        total:
+          type: integer
+          example: 9
+    ListSupplier:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 5
+              name:
+                type: string
+                example: GearVN
+        first_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/supplier?page=1
+        from:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        last_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/supplier?page=1
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: http://minh-hoang-intern.loc/api/supplier?page=1
+              label:
+                type: string
+                example: &laquo; Previous
+              active:
+                type: boolean
+                example: false
+        next_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/supplier?page=2
+        path:
+          type: string
+          example: http://minh-hoang-intern.loc/api/supplier
+        per_page:
+          type: integer
+          example: 2
+        prev_page_url:
+          type: integer
+        to:
+          type: integer
+          example: 2
+        total:
+          type: integer
+          example: 9
+    ListAsset:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: 13371
+              name:
+                type: string
+                example: logitech-1357
+              location:
+                type: string
+                example: distric1
+              category:
+                type: string
+                example: đồ công nghệ
+              condition:
+                type: integer
+                default: 1
+                enum:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+              purchase:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: ISO8601
+                    example: 2011-03-03
+                  serial:
+                    type: string
+                    example: sku1137
+                  warrranty:
+                    type: string
+                    example: 34
+                  supplier:
+                    type: string
+                    example: GearVN
+                  model:
+                    type: string
+                    example: G3176
+                  manufactorer:
+                    type: string
+                    example: logitech
+              price:
+                type: string
+                example: 3000
+              note:
+                type: string
+                example: abc
+        first_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/asset?page=1
+        from:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        last_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/asset?page=1
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: http://minh-hoang-intern.loc/api/asset?page=1
+              label:
+                type: string
+                example: &laquo; Previous
+              active:
+                type: boolean
+                example: false
+        next_page_url:
+          type: string
+          example: http://minh-hoang-intern.loc/api/asset?page=2
+        path:
+          type: string
+          example: http://minh-hoang-intern.loc/api/asset
+        per_page:
+          type: integer
+          example: 2
+        prev_page_url:
+          type: integer
+        to:
+          type: integer
+          example: 2
+        total:
+          type: integer
+          example: 9
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

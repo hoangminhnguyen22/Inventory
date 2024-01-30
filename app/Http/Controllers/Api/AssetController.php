@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\Requests\Asset\StoreAssetRequest;
+use App\Http\Controllers\Api\Requests\Asset\UpdateAssetRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Asset;
@@ -19,6 +21,7 @@ use App\Repositories\ManufactorerRepositoryInterface;
 use App\Repositories\SupplierRepositoryInterface;
 use App\Repositories\PurchaseRepositoryInterface;
 use App\Http\Resources\AssetResource;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class AssetController extends Controller
 {
@@ -69,28 +72,13 @@ class AssetController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreAssetRequest $request)
     {
-        $purchase = [
-            'date' => $request->date,
-            'serial' => $request->serial,
-            'warranty' => $request->warranty,
-            'supplier_id' => $request->supplier_id,
-            'manufactorer_id' => $request->manufactorer_id,
-            'model_id' => $request->model_id,
-        ];
+        $purchase =  $request->purchase()['purchase'];
         $purchase = $this->purchaseRepository->store($purchase);
 
-        $asset = [
-            'code' => $request->code,
-            'name' => $request->name,
-            'location_id' => $request->location_id,            
-            'category_id' => $request->category_id,            
-            'condition' => $request->condition,            
-            'purchase_id' => $purchase->id,            
-            'price' => $request->price,            
-            'note' => $request->note,            
-        ];
+        $asset = $request->purchase()['asset'];
+        $asset['purchase_id'] = $purchase->id;
         $asset = $this->assetRepository->store($asset);
 
         return new AssetResource($asset);
@@ -108,16 +96,49 @@ class AssetController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateAssetRequest $request, Asset $asset)
     {
-        //
+        $purchase_id = $asset->purchase_id;
+        $asset_id = $asset->id;
+        $purchase =  $request->purchase()['purchase'];
+        $purchase = $this->purchaseRepository->update($asset->purchase_id, $purchase);
+
+        $asset = $request->purchase()['asset'];
+        $asset['purchase_id'] = $purchase_id;
+        $asset = $this->assetRepository->update($asset_id, $asset);
+        $asset = $this->assetRepository->find($asset_id);
+
+        return new AssetResource($asset);
+    }
+
+    public function qrCode()
+    {
+        $assets = $this->assetRepository->index(10);
+        return QrCode::generate(
+            'Hello, World!',
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Asset $asset)
     {
-        //
+        if(
+            $this->purchaseRepository->delete($asset->purchase_id) &&
+            $this->assetRepository->delete($asset->id)
+        ){
+            return response()->json(
+                [
+                    'message' => 'Xóa thành công',
+                ],
+            );
+        }else{
+            return response()->json(
+                [
+                    'message' => 'Xóa không thành công',
+                ],
+            );
+        }
     }
 }

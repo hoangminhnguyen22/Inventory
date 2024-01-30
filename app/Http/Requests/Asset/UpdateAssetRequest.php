@@ -23,7 +23,7 @@ class UpdateAssetRequest extends FormRequest
     {
         return [
             //asset
-            'code' => 'required|unique:assets',
+            'code' => 'required|unique:assets,code,'.$this->asset->id,
             'name' => 'required',
             'location_id' => 'required',
             'category_id' => 'required',
@@ -31,7 +31,7 @@ class UpdateAssetRequest extends FormRequest
             'price' => 'required',
 
             //purchase
-            'serial' => 'required|unique:purchases',
+            'serial' => 'required|unique:purchases,serial,'.$this->asset->purchase_id,
             'date' => 'required',
             'warranty' => 'required',            
             'supplier_id' => 'required',
@@ -67,6 +67,32 @@ class UpdateAssetRequest extends FormRequest
             //image
             // 'image_upload.required' => 'Vui lòng chọn ảnh',
 
+        ];
+    }
+
+    public function purchase()
+    {
+        $purchase = [
+            'date' => $this->date,
+            'serial' => $this->serial,
+            'warranty' => $this->warranty,
+            'supplier_id' => $this->supplier_id,
+            'manufactorer_id' => $this->manufactorer_id,
+            'model_id' => $this->model_id,
+        ];
+
+        $asset = [
+            'code' => $this->code,
+            'name' => $this->name,
+            'location_id' => $this->location_id,            
+            'category_id' => $this->category_id,            
+            'condition' => $this->condition,         
+            'price' => $this->price,            
+            'note' => $this->note,            
+        ];
+        return [
+            'purchase' => $purchase,
+            'asset' => $asset,
         ];
     }
 }

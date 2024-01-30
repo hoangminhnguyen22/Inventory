@@ -5,6 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ManufactorerController;
+use App\Http\Controllers\Api\ModelAssetController;
+use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\LocationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,16 +28,26 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-route::post('/register', [AuthController::class, 'register'])->name('auth.regstore');
-route::post('/login', [AuthController::class, 'store'])->name('auth.logstore');
-route::post('/forgot', [AuthController::class, 'forgotStore'])->name('auth.forgot.store');
-route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+//register
+route::post('/register', [AuthController::class, 'register']);
+Route::get('register/verify/{code}', [AuthController::class, 'storeVerify']);
 
+//login
+route::post('/login', [AuthController::class, 'store']);
 
+//forgot
+route::post('/forgot/store', [AuthController::class, 'forgotStore']);
+Route::get('reset-password/{token}', [AuthController::class, 'checkToken']);
+Route::put('reset-password', [AuthController::class, 'reset'])->name('auth.reset');
 
-Route::group(['middleware' => 'auth:api'], function() {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    // Route::get('/asset/qr-code', [AssetController::class, 'qrCode'])->name('asset.qrCode');
+//logout
+route::get('/logout', [AuthController::class, 'logout']);
+
+//43p kiểu date
+// Route::group(['middleware' => 'auth:api'], function() {
+Route::middleware(['auth:api'])->group(function(){
+    Route::get('/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/asset/qr-code', [AssetController::class, 'qrCode']);
 
     Route::apiResources([
         'asset'         => AssetController::class,
@@ -39,8 +56,8 @@ Route::group(['middleware' => 'auth:api'], function() {
         'location'      => LocationController::class,
         'manufactorer'  => ManufactorerController::class,
         'model-asset'   => ModelAssetController::class,
-        'role'          => RoleController::class,
-        'purchase'      => PurchaseController::class,
+        // 'role'          => RoleController::class,
+        // 'purchase'      => PurchaseController::class,
         'supplier'      => SupplierController::class,
         'user'          => UserController::class,
     ]);

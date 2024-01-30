@@ -12,6 +12,7 @@ class Location extends Model
     use HasFactory;
 
     protected $table = 'locations';
+    public $timestamps = false;
     protected $fillable = ['id', 'name', 'department_id', 'note'];
 
     public function users(): HasMany
@@ -23,5 +24,14 @@ class Location extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');          // chưa xác định
+    }
+
+    //them localSerach
+    public function scopeSearch($query)
+    {
+        if($key = request()->key){
+            $data = $query->where('name','like','%'.$key.'%');
+        }
+        return $query;
     }
 }

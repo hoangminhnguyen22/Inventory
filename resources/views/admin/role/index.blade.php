@@ -28,7 +28,7 @@
             <div class="nav-search" id="nav-search">
                 <form class="form-search">
                     <span class="input-icon">
-                        <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                        <input type="text" name="key" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
                         <i class="ace-icon fa fa-search nav-search-icon"></i>
                     </span>
                 </form>
@@ -94,7 +94,31 @@
                     </td>
                     <td>{{$role->id}}</td>
                     <td>{{$role->name}}</td>
-                    <td>{{$role->permissions}}</td>
+                    <?php 
+                        $str = str_replace('[', '', $role->permissions);
+                        $str = str_replace(']', '', $str);
+                        $str = str_replace('"', '', $str);
+                        $str = str_replace(',', ' ', $str);
+                        $str = explode(' ', $str);
+                        $attr = [];
+                        foreach ($str as $item) 
+                        {
+                            $split = explode('.', $item);
+                            $items = [
+                                "r" => $split[0],
+                                "p" => $split[1],
+                            ];
+                            array_push($attr, $items);
+
+                        };
+                        // dd($attr);
+
+                    ?>
+                    <td>
+                        @foreach($attr as $permission)
+                            <div>{{$permission['r']}}.{{$permission['p']}}</div>
+                        @endforeach
+                    </td>
                     <td>
                         <div class="hidden-sm hidden-xs btn-group">
                     <a href="{{ route('role.edit', $role->id)}}" 

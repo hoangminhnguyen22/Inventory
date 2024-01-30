@@ -22,4 +22,12 @@ class Role extends Model
     // {
     //     return $this->belongsToMany(Permission::class);
     // }
+
+    public function scopeSearch($query)
+    {
+        if($key = request()->key){
+            $data = $query->where('name','like','%'.$key.'%');
+        }
+        return $query;
+    }
 }

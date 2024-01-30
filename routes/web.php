@@ -24,7 +24,7 @@ use App\Http\Controllers\UserController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+//print, role
 Route::get('/test', function () {
     return view('email.AccountVerification');
 });
@@ -32,7 +32,7 @@ Route::get('/test', function () {
 //register and verify
 route::get('/register', [AuthController::class, 'register'])->name('auth.register')->middleware('checkLogout');
 route::post('/register/storeRegister', [AuthController::class, 'storeRegister'])->name('auth.regstore');
-route::get('/register/verify', [AuthController::class, 'verify'])->name('auth.verify')->middleware('verify');
+route::get('/register/verify', [AuthController::class, 'verify'])->name('auth.verify')->middleware('checkReset');
 route::post('/register/re-send', [AuthController::class, 'reSend'])->name('auth.resend');
 Route::get('register/verify/{code}', [AuthController::class, 'storeVerify']);
 
@@ -46,7 +46,7 @@ route::post('/forgot/store', [AuthController::class, 'forgotStore'])->name('auth
 
 //reset password
 Route::get('reset-password/{token}', [AuthController::class, 'checkToken']);
-Route::get('enter-new-password', [AuthController::class, 'enterPassword'])->name('auth.enterPassword');
+Route::get('enter-new-password', [AuthController::class, 'enterPassword'])->name('auth.enterPassword')->middleware('checkStatus');
 Route::put('reset-password', [AuthController::class, 'reset'])->name('auth.reset');
 
 //logout
@@ -56,10 +56,23 @@ route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::get('/error', [AdminController::class, 'error'])->name('admin.error');
 Route::get('/ban', [AdminController::class, 'ban'])->name('admin.ban');
 
-Route::middleware(['auth', 'admin'])->prefix("/admin")->group(function(){
-    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::middleware(['auth', 'admin', 'verify'])->prefix("/admin")->group(function(){
+    //dashboard
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard'); 
+    
+    Route::get('/docs', function () {
+        return view('swagger.index');
+    });
 
-    //hỏi thử tại sao nằm dưới không được mà nằm trên được
+    //excel
+    //location
+    Route::get('import-location', [LocationController::class, 'getFile'])->name('location.import');
+    Route::post('import-location', [LocationController::class, 'import'])->name('location.importfile');
+    //asset
+    Route::get('import-asset', [AssetController::class, 'getFile'])->name('asset.import');
+    Route::post('import-asset', [AssetController::class, 'import'])->name('asset.importfile');
+
+    //resource
     Route::get('/asset/qr-code', [AssetController::class, 'qrCode'])->name('asset.qrCode');
     Route::resources([
         'asset'         => AssetController::class,
@@ -74,5 +87,5 @@ Route::middleware(['auth', 'admin'])->prefix("/admin")->group(function(){
         'user'          => UserController::class,
     ]);
     
+    
 });
-// test

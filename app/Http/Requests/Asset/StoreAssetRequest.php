@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Asset;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
 class StoreAssetRequest extends FormRequest
 {
@@ -69,4 +71,31 @@ class StoreAssetRequest extends FormRequest
 
         ];
     }
+
+    public function purchase()
+    {
+        $purchase = [
+            'date' => $this->date,
+            'serial' => $this->serial,
+            'warranty' => $this->warranty,
+            'supplier_id' => $this->supplier_id,
+            'manufactorer_id' => $this->manufactorer_id,
+            'model_id' => $this->model_id,
+        ];
+
+        $asset = [
+            'code' => $this->code,
+            'name' => $this->name,
+            'location_id' => $this->location_id,            
+            'category_id' => $this->category_id,            
+            'condition' => $this->condition,         
+            'price' => $this->price,            
+            'note' => $this->note,            
+        ];
+        return [
+            'purchase' => $purchase,
+            'asset' => $asset,
+        ];
+    }
+
 }

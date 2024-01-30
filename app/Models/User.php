@@ -80,4 +80,12 @@ class User extends Authenticatable implements MustVerifyEmail
         
         return $data;
     }
+
+    public function scopeSearch($query)
+    {
+        if($key = request()->key){
+            $data = $query->where('name','like','%'.$key.'%');
+        }
+        return $query;
+    }
 }

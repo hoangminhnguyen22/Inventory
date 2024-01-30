@@ -7,8 +7,6 @@ use Illuminate\Support\Collection;
 interface UserRepositoryInterface extends BaseRepositoryInterface
 {
     public function all();
-
-    public function paginate($items = null);
     
     public function find($id);
 

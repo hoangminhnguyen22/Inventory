@@ -49,4 +49,12 @@ class Asset extends Model
     //         'id' // Local key on the cars table...
     //     );
     // }
+
+    public function scopeSearch($query)
+    {
+        if($key = request()->key){
+            $data = $query->where('name','like','%'.$key.'%');
+        }
+        return $query;
+    }
 }

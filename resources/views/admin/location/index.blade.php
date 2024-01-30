@@ -26,9 +26,9 @@
             </ul><!-- /.breadcrumb -->
 
             <div class="nav-search" id="nav-search">
-                <form class="form-search">
+                <form class="form-search" action="">
                     <span class="input-icon">
-                        <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                        <input type="text" name="key" placeholder="Search ..." class="nav-search-input" autocomplete="off" />
                         <i class="ace-icon fa fa-search nav-search-icon"></i>
                     </span>
                 </form>
@@ -57,12 +57,12 @@
                         </form>
                     </div><!-- /.nav-search -->
                 </div> --}}
-                <div class="col-md-offset-10 col-md-9">
+                <div class="col-md-offset-4 col-md-9">
                     <a class="btn btn-info" type="button" href="{{route('location.create')}}">
                         <i class="ace-icon fa fa-check bigger-110"></i>
                         Create
                     </a>
-                    <a class="btn btn-info" type="button" href="{{route('location.create')}}">
+                    <a class="btn btn-info" type="button" href="{{route('location.import')}}">
                         <i class="ace-icon fa fa-check bigger-110"></i>
                         Import
                     </a>
@@ -111,7 +111,7 @@
                     </td>
                     <td>{{$location->id}}</td>
                     <td>{{$location->name}}</td>
-                    <td>{{$location->department->name}}</td>
+                    <td>{{$location->department->name ?? 'none'}}</td>
                     <td>{{$location->note}}</td>
                     <td>
                         <div class="hidden-sm hidden-xs btn-group">

@@ -110,8 +110,10 @@ class RoleController extends Controller
             'location' => $location,
             'role' => $role,
         ];
-        
-        return view('admin.role.create')->with('roles', $array);
+        $group = array_merge($asset, $user, $location, $role);
+
+        return view('admin.role.create')->with('roles', $array)
+                                        ->with('group', $group);
     }
 
     /**

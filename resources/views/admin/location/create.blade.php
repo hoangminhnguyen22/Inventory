@@ -63,7 +63,7 @@
                             <div>
                                 <label for="form-field-9">Name</label>
 
-                                <input class="form-control limited" name="name" maxlength="50"></input>
+                                <input class="form-control limited" name="name" value="{{ old('name') }}" maxlength="50"></input>
                                 @error('name')
                                     <div class="form-group has-error">
                                         <p class="help-block text-danger">{{$message}}</p>
@@ -76,7 +76,7 @@
                             <div>
                                 <label for="form-field-11">note</label>
 
-                                <textarea name="note" class="autosize-transition form-control"></textarea>
+                                <textarea name="note" class="autosize-transition form-control">{{old('note')}}</textarea>
                                 @error('note')
                                     <div class="form-group has-error">
                                         <p class="help-block text-danger">{{$message}}</p>
@@ -90,7 +90,17 @@
                                 <label for="form-field-9">Department</label>
 
                                 <select name="department_id" class="form-control">
-                                    <option value="">--SELECT ONE--</option>
+                                    @if(session('_old_input'))
+                                        @if(session('_old_input')['department_id'])
+                                            @foreach($departments as $department)
+                                                @if(session('_old_input')['department_id'] == $department->id)
+                                                    <option value="{{$department->id}}">{{$department->name}}</option>
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    @else
+                                        <option value="">--SELECT ONE--</option>
+                                    @endif
                                     @foreach($departments as $department)
                                         <option value="{{$department->id}}">{{$department->name}}</option>
                                     @endforeach

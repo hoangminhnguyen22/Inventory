@@ -22,7 +22,18 @@ class UpdateLocationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required',
+            'note' => 'required',
+            'department_id' => 'required',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'Không để trống tên',            
+            'note.required' => 'Không để trống ghi chú',
+            'department_id.required' => 'Vui lòng chọn phòng ban',
         ];
     }
 }

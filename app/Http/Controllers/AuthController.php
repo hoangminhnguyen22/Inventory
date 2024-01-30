@@ -54,9 +54,10 @@ class AuthController extends Controller
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),            
             'phone' => $request->input('phone'),
-            'location_id' => 1,
+            'location_id' => 22,
             'status' => 0,
         ]);     
+        $attach = $create->roles()->sync(1);
 
         $sendMAil = $this->makeCode($create);
 
@@ -90,7 +91,6 @@ class AuthController extends Controller
         $user = Auth::user();
         $sendMAil = $this->makeCode($user);
         return redirect()->route('admin.dashboard');       
-
     }
 
     public function storeVerify($code)
@@ -103,12 +103,12 @@ class AuthController extends Controller
                 'token' => null,
                 'email_verified_at' => Carbon::now(),
             ]);
-            $notification_status = 'Bạn đã xác nhận thành công, mời đăng nhập';
+            return redirect(route('auth.index'))->with('success', 'xác thực thành công, mời bạn đăng nhập lại');
         } else {
-            $notification_status ='Mã xác nhận không chính xác';
+            return redirect(route('auth.verify'))->with('fail', 'mã xác thực không chính xác');
         }
 
-        return redirect(route('auth.index'))->with('success', $notification_status);
+        
     }
 
     public function forgot()
@@ -126,6 +126,7 @@ class AuthController extends Controller
         }
 
         $passwordReset = $user->update([
+            'status' => 2,
             'token' => Str::random(60),
         ]);
         

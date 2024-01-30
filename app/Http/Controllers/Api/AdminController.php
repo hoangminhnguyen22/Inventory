@@ -13,6 +13,7 @@ use App\Http\Resources\AssetResource;
 class AdminController extends Controller
 {
     private $userRepository;
+    private $assetRepository;
   
     public function __construct(
         UserRepositoryInterface $userRepository,
@@ -26,11 +27,13 @@ class AdminController extends Controller
     public function dashboard(){
         $users = $this->userRepository->all();
         $assets = $this->assetRepository->all();
-        $recentAsset = $this->assetRepository->getRecent(1);
-        // dd($recentAsset);
+        $recentAsset = $this->assetRepository->getRecent(10);
+        $recentUser = $this->userRepository->getRecent(10);
+        
         return response()->json([
             'total_users' => count($users),
             'total_assets' => count($assets),
+            'recent_users' => $recentUser,
             'recent_assets' => AssetResource::collection($recentAsset),
         ]);
     }

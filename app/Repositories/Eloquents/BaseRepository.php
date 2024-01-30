@@ -19,7 +19,7 @@ class BaseRepository implements BaseRepositoryInterface
 
     public function index($item)
     {
-        return $this->model->paginate($item);
+        return $this->model->orderBy('id','DESc')->search()->paginate($item);
     }
 
     public function store($data = [])

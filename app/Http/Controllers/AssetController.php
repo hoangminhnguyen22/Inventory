@@ -19,6 +19,8 @@ use App\Repositories\ManufactorerRepositoryInterface;
 use App\Repositories\SupplierRepositoryInterface;
 use App\Repositories\PurchaseRepositoryInterface;
 
+use App\Imports\AssetImport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
 class AssetController extends Controller
@@ -56,6 +58,7 @@ class AssetController extends Controller
     public function index()
     {
         $assets = $this->assetRepository->index(10);
+
         return view('admin.asset.index')->with('assets', $assets);
     }
 
@@ -69,6 +72,7 @@ class AssetController extends Controller
         $categories = $this->categoryRepository->all();
         $manufactorers = $this->manufactorerRepository->all();
         $suppliers = $this->supplierRepository->all();
+        
         return view('admin.asset.create')->with('locations', $locations)                                        
                                         ->with('modelAssets', $modelAssets)
                                         ->with('manufactorers', $manufactorers)
@@ -81,26 +85,11 @@ class AssetController extends Controller
      */
     public function store(StoreAssetRequest $request)
     {
-        $purchase = [
-            'date' => $request->date,
-            'serial' => $request->serial,
-            'warranty' => $request->warranty,
-            'supplier_id' => $request->supplier_id,
-            'manufactorer_id' => $request->manufactorer_id,
-            'model_id' => $request->model_id,
-        ];
+        $purchase =  $request->purchase()['purchase'];
         $purchase = $this->purchaseRepository->store($purchase);
 
-        $asset = [
-            'code' => $request->code,
-            'name' => $request->name,
-            'location_id' => $request->location_id,            
-            'category_id' => $request->category_id,            
-            'condition' => $request->condition,            
-            'purchase_id' => $purchase->id,            
-            'price' => $request->price,            
-            'note' => $request->note,            
-        ];
+        $asset = $request->purchase()['asset'];
+        $asset['purchase_id'] = $purchase->id;
         $asset = $this->assetRepository->store($asset);
 
         if($asset){
@@ -131,7 +120,17 @@ class AssetController extends Controller
      */
     public function edit(Asset $asset)
     {
-        //
+        $locations = $this->locationRepository->all();
+        $modelAssets = $this->modelAssetRepository->all();
+        $categories = $this->categoryRepository->all();
+        $manufactorers = $this->manufactorerRepository->all();
+        $suppliers = $this->supplierRepository->all();
+        return view('admin.asset.edit')->with('asset', $asset)
+                                        ->with('locations', $locations)                                        
+                                        ->with('modelAssets', $modelAssets)
+                                        ->with('manufactorers', $manufactorers)
+                                        ->with('categories', $categories)
+                                        ->with('suppliers', $suppliers);
     }
 
     /**
@@ -139,7 +138,20 @@ class AssetController extends Controller
      */
     public function update(UpdateAssetRequest $request, Asset $asset)
     {
-        //
+        $purchase_id = $asset->purchase_id;
+        $asset_id = $asset->id;
+        $purchase =  $request->purchase()['purchase'];
+        $purchase = $this->purchaseRepository->update($asset->purchase_id, $purchase);
+
+        $asset = $request->purchase()['asset'];
+        $asset['purchase_id'] = $purchase_id;
+        $asset = $this->assetRepository->update($asset_id, $asset);
+
+        if($asset){
+            return redirect()->route('asset.index')->with('success','thêm mới thành công');
+        }else{
+            return redirect()->route('asset.index')->with('success','thêm mới không thành công');
+        }
     }
 
     /**
@@ -147,6 +159,28 @@ class AssetController extends Controller
      */
     public function destroy(Asset $asset)
     {
-        //
+
+        if(
+            $this->purchaseRepository->delete($asset->purchase_id) &&
+            $this->assetRepository->delete($asset->id)
+        ){
+            return redirect()->route('asset.index')->with('success','xóa thành công');
+        }else{
+            return redirect()->route('asset.index')->with('success','xóa không thành công');
+        }
+    }
+
+    public function getFile() {
+        return view('admin.asset.import');
+    }
+
+    public function import(Request $request) {
+        $file = Excel::import(new AssetImport, $request->file('file_upload'));
+        if($file){
+            return redirect()->route('asset.index')->with('success','import thành công');
+        }
+        else{
+            return redirect()->route('asset.index')->with('error','import không thành công');
+        }
     }
 }

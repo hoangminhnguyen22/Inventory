@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\Location\StoreLocationRequest;
 use App\Http\Requests\Location\UpdateLocationRequest;
 use App\Models\Location;
 use App\Models\Department;
 use App\Repositories\LocationRepositoryInterface;
 use App\Repositories\DepartmentRepositoryInterface;
+
+use App\Imports\LocationImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LocationController extends Controller
 {
@@ -53,7 +57,7 @@ class LocationController extends Controller
         if($location){
             return redirect()->route('location.index')->with('success','thêm mới thành công');
         }else{
-            return redirect()->route('location.index')->with('success','thêm mới không thành công');
+            return redirect()->route('location.index')->with('error','thêm mới không thành công');
         }
     }
 
@@ -102,6 +106,20 @@ class LocationController extends Controller
             return redirect()->route('location.index')->with('success','xóa thành công');
         }else{
             return redirect()->route('location.index')->with('error','xóa không thành công');
+        }
+    }
+
+    public function getFile() {
+        return view('admin.location.import');
+    }
+
+    public function import(Request $request) {
+        $file = Excel::import(new LocationImport, $request->file('file_upload'));
+        if($file){
+            return redirect()->route('location.index')->with('success','import thành công');
+        }
+        else{
+            return redirect()->route('location.index')->with('error','import không thành công');
         }
     }
 }

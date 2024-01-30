@@ -28,7 +28,7 @@
             <div class="nav-search" id="nav-search">
                 <form class="form-search">
                     <span class="input-icon">
-                        <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                        <input type="text" name="key" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
                         <i class="ace-icon fa fa-search nav-search-icon"></i>
                     </span>
                 </form>
@@ -69,25 +69,25 @@
                             <div class="row">
                                 <div class="col-xs-8">
                                     <div>
-                                        <strong>{{$asset->name}}</strong>
+                                        <strong>{{$asset->name ?? 'none'}}</strong>
                                     </div>
                                     <div>
-                                        Asset code: {{$asset->code}}
+                                        Asset code: {{$asset->code ?? 'none'}}
                                     </div>
                                     <div>
-                                        Date purchase: {{$asset->purchase->date}}
+                                        Date purchase: {{$asset->purchase->date ?? 'none'}}
                                     </div>
                                     <div>
-                                        Warranty: {{$asset->purchase->warranty}}m
+                                        Warranty: {{$asset->purchase->warranty ?? 'none '}}m
                                     </div>
                                     <div>
-                                        Vendor: {{$asset->purchase->supplier->name}}
+                                        Vendor: {{$asset->purchase->supplier->name ?? 'none'}}
                                     </div>
                                     <div>
-                                        Serial: {{$asset->purchase->serial}} - Model: {{$asset->purchase->modelAsset->name}}
+                                        Serial: {{$asset->purchase->serial ?? 'none'}} - Model: {{$asset->purchase->modelAsset->name ?? 'none'}}
                                     </div>
                                     <div>
-                                        Location: {{$asset->location->name}} - {{$asset->location->department->name}}
+                                        Location: {{$asset->location->name ?? 'none'}} - {{$asset->location->department->name ?? 'none'}}
                                     </div>
                                 </div>
                                     

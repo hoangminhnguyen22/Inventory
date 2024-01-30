@@ -59,6 +59,7 @@ class UserController extends Controller
         $data['password'] = '123456';
         $data['status'] = '2';
         $user = $this->userRepository->store($data);
+        // $attach = $user->roles()->sync(1);
         
         if($user){
             $sendMAil = $user->notify(new InforAccount($user->email));
@@ -73,8 +74,6 @@ class UserController extends Controller
         //status 1: đã kích hoạt
         //status 2: cấp tài khoản mà chưa đổi mk
         //status 3: tài khoản bị khóa
-
-        
     }
 
     /**

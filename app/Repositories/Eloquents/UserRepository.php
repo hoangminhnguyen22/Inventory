@@ -24,11 +24,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return $this->model->get();
     }
 
-    public function paginate($items = null)
-    {
-        return $this->model->paginate($items);
-    }
-
     public function find($id)
     {
         return $this->model->find($id);
@@ -36,7 +31,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function store($data = [])
     {
-        $addUser = $this->model->create($data);;
+        $addUser = $this->model->create($data);
         $attach = $addUser->roles()->sync($data['role']);
 
 
@@ -54,7 +49,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $record = $this->model->findOrFail($id);
         $updateData = $record->update($data);
         $sync = $record->roles()->sync($data['role']);
-        dd($sync);
         if($updateData && $sync){
             return true;
         }

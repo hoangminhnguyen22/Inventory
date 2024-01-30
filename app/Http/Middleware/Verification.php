@@ -17,15 +17,13 @@ class Verification
     public function handle(Request $request, Closure $next): Response
     {
         if(Auth::check()){
-            if(Auth::user()->status==0){
-                return $next($request);                                
+            if(Auth::user()->status==0){ 
+                return redirect()->route('auth.verify');                           
             }
-            // redirect()->route('admin.dashboard');
+            if(Auth::user()->status==2){ 
+                return redirect()->route('auth.enterPassword');                           
+            }
+            return $next($request);
         }
-        // dd($request->email);
-        // if($request->email){
-
-        // }
-        return redirect()->route('auth.index');
     }
 }

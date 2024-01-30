@@ -11,7 +11,7 @@
                 </button>
 
                 <div class="navbar-header pull-left">
-                    <a href="index.html" class="navbar-brand">
+                    <a href="{{route('admin.dashboard')}}" class="navbar-brand">
                         <small>
                             <i class="fa fa-leaf"></i>
                             Ace Admin
@@ -32,11 +32,11 @@
                         {{-- để các button thông báo khác --}}
 
                         <li class="light-blue dropdown-modal">
-                            <a data-toggle="dropdown" href="#" class="dropdown-toggle">
-                                <img class="nav-user-photo" src="assets/images/avatars/user.jpg" alt="Jason's Photo" />
+                            <a href="{{route('auth.logout')}}" class="dropdown-toggle">
+                                <img class="nav-user-photo" src="{{URL::asset('assets')}}/images/avatars/user.jpg" alt="Jason's Photo" />
                                 <span class="user-info">
                                     <small>Welcome,</small>
-                                    Jason
+                                    {{Auth::user()->name}}
                                 </span>
 
                                 <i class="ace-icon fa fa-caret-down"></i>

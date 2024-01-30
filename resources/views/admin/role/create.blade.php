@@ -73,7 +73,7 @@
 
                             <hr />
 
-                            <div class="form-group" style="height: 300px; overflow-y: auto">
+                            {{-- <div class="form-group" style="height: 300px; overflow-y: auto">
                                 <table id="simple-table" class="table  table-bordered table-hover">                                    
                                     <thead>
                                         <tr>
@@ -117,10 +117,17 @@
                                     </tbody>
                                 </table>
                                
+                            </div> --}}
+                            <div>
+                                    <label for="form-field-9">Roles</label>
+                                    <div style="overflow-y: scroll; height:150px;">
+                                        @foreach($group as $role)
+                                            <div>
+                                                <input type="checkbox" class="role-item" name="route[]" value="{{$role->route}}"> {{$role->route}}
+                                            </div>
+                                        @endforeach
+                                        </div>
                             </div>
-
-                            
-
                             <div class="clearfix form-actions">
                                 <div class="col-md-offset-2 col-md-9">
                                     <button class="btn btn-info" type="submit">

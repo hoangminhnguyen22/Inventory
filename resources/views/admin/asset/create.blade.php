@@ -66,7 +66,7 @@
                                     <div>
                                         <label for="form-field-9">Code</label>
 
-                                        <input class="form-control limited" name="code" maxlength="50">
+                                        <input class="form-control limited" name="code" value="{{ old('code') }}" maxlength="50">
                                         @error('code')
                                             <div class="form-group has-error">
                                                 <p class="help-block text-danger">{{$message}}</p>
@@ -79,7 +79,7 @@
                                     <div>
                                         <label for="form-field-9">Name</label>
 
-                                        <input class="form-control limited" name="name" maxlength="50">
+                                        <input class="form-control limited" name="name" value="{{ old('name') }}" maxlength="50">
                                         @error('name')
                                             <div class="form-group has-error">
                                                 <p class="help-block text-danger">{{$message}}</p>
@@ -91,9 +91,18 @@
 
                                     <div>
                                         <label for="form-field-9">Location</label>
-
-                                        <select name="location_id" class="form-control">
-                                            <option value="">--SELECT ONE--</option>
+                                        <select name="location_id" class="form-control">                                            
+                                            @if(session('_old_input'))
+                                                @if(session('_old_input')['location_id'])
+                                                    @foreach($locations as $location)
+                                                        @if(session('_old_input')['location_id'] == $location->id)
+                                                            <option value="{{$location->id}}">{{$location->name}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            @else
+                                                <option value="">--SELECT ONE--</option>
+                                            @endif
                                             @foreach($locations as $location)
                                                 <option value="{{$location->id}}">{{$location->name}}</option>
                                             @endforeach
@@ -111,7 +120,17 @@
                                         <label for="form-field-9">Category</label>
 
                                         <select name="category_id" class="form-control">
-                                            <option value="">--SELECT ONE--</option>
+                                            @if(session('_old_input'))
+                                                @if(session('_old_input')['category_id'])
+                                                    @foreach($categories as $category)
+                                                        @if(session('_old_input')['category_id'] == $category->id)
+                                                            <option value="{{$category->id}}">{{$category->name}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            @else
+                                                <option value="">--SELECT ONE--</option>
+                                            @endif
                                             @foreach($categories as $category)
                                                 <option value="{{$category->id}}">{{$category->name}}</option>
                                             @endforeach
@@ -129,7 +148,18 @@
                                         <label for="form-field-9">Condition</label>
 
                                         <select name="condition" class="form-control">
-                                            <option value="">--SELECT ONE--</option>
+                                            <?php 
+                                                $conditions = ['NON-EXISTENT','VERY GOOD','GOOD','FAIR','REQUIRES RENEWAL','UNSERVICEABLE'];    
+                                            ?>
+                                            @if(session('_old_input'))
+                                                @if(session('_old_input')['condition'])
+                                                    @if(session('_old_input')['condition'] == $category->id)
+                                                        <option value="{{ old('condition') }}">{{$conditions[old('condition')]}}</option>
+                                                    @endif
+                                                @endif
+                                            @else
+                                                <option value="">--SELECT ONE--</option>
+                                            @endif
                                                 <option value="0">NON-EXISTENT</option>
                                                 <option value="1">VERY GOOD</option>
                                                 <option value="2">GOOD</option>
@@ -149,7 +179,7 @@
                                     <div>
                                         <label for="form-field-11">Price</label>
 
-                                        <input name="price" class="autosize-transition form-control">
+                                        <input name="price" value="{{ old('price') }}" class="autosize-transition form-control">
                                         @error('price')
                                             <div class="form-group has-error">
                                                 <p class="help-block text-danger">{{$message}}</p>
@@ -162,7 +192,7 @@
                                     <div>
                                         <label for="form-field-11">Note</label>
 
-                                        <textarea name="note" class="autosize-transition form-control"></textarea>
+                                        <textarea name="note" value="{{ old('note') }}" class="autosize-transition form-control">{{old('note')}}</textarea>
                                         @error('note')
                                             <div class="form-group has-error">
                                                 <p class="help-block text-danger">{{$message}}</p>
@@ -207,7 +237,7 @@
 
                                         <div class="input-group">
                                             <span class="input-group-btn">
-                                                <input class="form-control input-mask-date" type="date" name="date">
+                                                <input class="form-control input-mask-date" type="date" value="{{old('date')}}" name="date">
                                             </span>
                                             @error('date')
                                                 <div class="form-group has-error">
@@ -224,7 +254,7 @@
                                         </label>
 
                                         <div>
-                                            <input class="form-control input-mask-phone" type="text" name="serial" />
+                                            <input class="form-control input-mask-phone" type="text" value="{{old('serial')}}" name="serial" />
                                             @error('serial')
                                                 <div class="form-group has-error">
                                                     <p class="help-block text-danger">{{$message}}</p>
@@ -241,16 +271,16 @@
                                         </label>
 
                                         <div  class="input-group">
-                                            <input class="form-control input-mask-product" type="text" name="warranty" />
+                                            <input class="form-control input-mask-product" type="text" value="{{old('warranty')}}" name="warranty" />
                                             <span class="input-group-addon">
                                                 Month(s)
                                             </span>
-                                            @error('warranty')
-                                                <div class="form-group has-error">
-                                                    <p class="help-block text-danger">{{$message}}</p>
-                                                </div>
-                                            @enderror 
                                         </div>
+                                        @error('warranty')
+                                            <div class="form-group has-error">
+                                                <p class="help-block text-danger">{{$message}}</p>
+                                            </div>
+                                        @enderror 
                                     </div>
 
                                     <hr />
@@ -262,7 +292,17 @@
 
                                         <div>
                                             <select name="supplier_id" class="form-control">
-                                                <option value="">--SELECT ONE--</option>
+                                                @if(session('_old_input'))
+                                                    @if(session('_old_input')['supplier_id'])
+                                                        @foreach($suppliers as $supplier)
+                                                            @if(session('_old_input')['supplier_id'] == $supplier->id)
+                                                                <option value="{{$supplier->id}}">{{$supplier->name}}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                @else
+                                                    <option value="">--SELECT ONE--</option>
+                                                @endif
                                                 @foreach($suppliers as $supplier)
                                                     <option value="{{$supplier->id}}">{{$supplier->name}}</option>
                                                 @endforeach
@@ -282,7 +322,17 @@
 
                                         <div>
                                             <select name="manufactorer_id" class="form-control">
-                                                <option value="">--SELECT ONE--</option>
+                                                @if(session('_old_input'))
+                                                    @if(session('_old_input')['manufactorer_id'])
+                                                        @foreach($manufactorers as $manufactorer)
+                                                            @if(session('_old_input')['manufactorer_id'] == $manufactorer->id)
+                                                                <option value="{{$manufactorer->id}}">{{$manufactorer->name}}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                @else
+                                                    <option value="">--SELECT ONE--</option>
+                                                @endif
                                                 @foreach($manufactorers as $manufactorer)
                                                     <option value="{{$manufactorer->id}}">{{$manufactorer->name}}</option>
                                                 @endforeach
@@ -302,7 +352,17 @@
 
                                         <div>
                                             <select name="model_id" class="form-control">
-                                                <option value="">--SELECT ONE--</option>
+                                                @if(session('_old_input'))
+                                                    @if(session('_old_input')['model_id'])
+                                                        @foreach($modelAssets as $modelAsset)
+                                                            @if(session('_old_input')['model_id'] == $modelAsset->id)
+                                                                <option value="{{$modelAsset->id}}">{{$modelAsset->name}}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                @else
+                                                    <option value="">--SELECT ONE--</option>
+                                                @endif
                                                 @foreach($modelAssets as $modelAsset)
                                                     <option value="{{$modelAsset->id}}">{{$modelAsset->name}}</option>
                                                 @endforeach
